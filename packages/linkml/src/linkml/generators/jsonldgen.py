@@ -210,8 +210,10 @@ class JSONLDGenerator(Generator):
         # with a ``://``) and relative refs are left untouched.
         for ci in range(0, len(context_list)):
             entry = context_list[ci]
-            if isinstance(entry, str) and "://" not in entry and os.path.isabs(entry):
-                context_list[ci] = Path(entry).as_uri()
+            if isinstance(entry, str) and "://" not in entry:
+                path = Path(entry)
+                if path.exists():
+                    context_list[ci] = path.absolute().as_uri()
 
         if self.format == "jsonld":
             self.schema["@context"] = context_list[0] if len(context_list) == 1 and not base_prefix else context_list
